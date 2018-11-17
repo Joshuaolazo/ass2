@@ -1,0 +1,70 @@
+
+1. Read Inputs (done)
+	a. -c -d -o flags in any order
+	b. -c flag nessessary
+	c. bad input args
+2. Make Threads (IDK)
+	a. count threads
+	b. print thread ids
+
+	c. directories
+		i. make new thread that calls directory crawler 2
+	d. files
+		ii. call file adder
+
+3. Add to global holder
+	a. figure out struture
+	b. how to make space
+	c. when column is null add ,
+4. Sort global holder
+	a. Same column order
+	b. one file
+	c. output file name
+
+optional:
+	make mergesort multithreaded
+----
+
+Restucture how we sort data:
+	Previously:
+		0. node data is string
+		1. read in first header row
+		2. find sorting column in first row
+		3. read in movie rows
+		4. find sorting column by checking columns(commas)
+		5. store column in node cat
+		6. store row in node data
+		7. sort based on cat
+		8. print based on data
+	Now:
+		Read Data (use two nodes???)
+		0. node data is linked list
+		1. read in first header row
+		2. match column to original column
+		3. read in movie rows
+		4. store each column in correct position in linked list
+		5. make string out of linked list (make sure ends consistent with .csv)
+		6. append string to global holder
+
+		Sort global list
+		0. node data is string
+		1. read in first header row
+		2. find sorting column in first row
+		3. read in movie rows
+		4. find sorting column by checking columns(commas)
+		5. store column in node cat
+		6. store row in node data
+		7. sort based on cat
+		8. print based on data
+
+---
+
+Documentation/Analysis
+
+1. Document Design
+	a. how to use code
+2. Make test csv files and describe them
+3. Compare Forking with threads
+	a. time analysis
+4. find out why they didnt like us
+
