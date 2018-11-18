@@ -6,10 +6,6 @@
 	objectVersion = 50;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		42750871219E6E910001A702 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 42750870219E6E910001A702 /* main.c */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		4275086B219E6E910001A702 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -29,8 +25,7 @@
 		42750866219E46050001A702 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		42750867219E46050001A702 /* mergesort.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mergesort.c; sourceTree = "<group>"; };
 		42750868219E631D0001A702 /* Todo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Todo.txt; sourceTree = "<group>"; };
-		4275086D219E6E910001A702 /* sys3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sys3; sourceTree = BUILT_PRODUCTS_DIR; };
-		42750870219E6E910001A702 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		4275086D219E6E910001A702 /* sys3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = sys3; path = /Users/Joshua/Documents/ass2/build/Debug/sys3; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,25 +48,7 @@
 				42750868219E631D0001A702 /* Todo.txt */,
 				42750864219E45A20001A702 /* multiThreadSorter_thread.h */,
 				42750865219E45A20001A702 /* multiThreadSorter_thread.c */,
-				4275086F219E6E910001A702 /* sys3 */,
-				4275086E219E6E910001A702 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		4275086E219E6E910001A702 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4275086D219E6E910001A702 /* sys3 */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		4275086F219E6E910001A702 /* sys3 */ = {
-			isa = PBXGroup;
-			children = (
-				42750870219E6E910001A702 /* main.c */,
-			);
-			path = sys3;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -115,7 +92,7 @@
 				en,
 			);
 			mainGroup = 4275085C219E43A30001A702;
-			productRefGroup = 4275086E219E6E910001A702 /* Products */;
+			productRefGroup = 4275085C219E43A30001A702;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -129,7 +106,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				42750871219E6E910001A702 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
