@@ -18,7 +18,7 @@
 #include <sys/mman.h>
 #include "multiThreadSorter_thread.h"
 
-
+Node Global;
 int PRINT = 1;
 
 int argchecker( int argc, char *argv[], char* sorting_column, char* output_directory )
@@ -356,7 +356,7 @@ long llength = 0;
 //new stuff GLOBAL is new char* LL 
 
 Node * Globalptr = NULL;
-Globalptr = GLOBAL.front;
+Globalptr = Global;
 
 
 while(Globalptr!=null){
