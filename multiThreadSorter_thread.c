@@ -18,142 +18,52 @@
 #include <sys/mman.h>
 #include "multiThreadSorter_thread.h"
 
-Node Global;
-int PRINT = 1;
+const char* position[28];
+position[0] = "color";
+position[1] = "director_name";
+position[2] = "num_critic_for_reviews";
+position[3] = "duration";
+position[4] = "director_facebook_likes";
+position[5] = "actor_3_facebook_likes";
+position[6] = "actor_2_name";
+position[7] = "actor_1_facebook_likes";
+position[8] = "gross";
+position[9] = "genres";
+position[10] = "actor_1_name";
+position[11] = "movie_title";
+position[12] = "num_voted_users";
+position[13] = "cast_total_facebook_likes";
+position[14] = "actor_3_name";
+position[15] = "facenumber_in_poster";
+position[16] = "plot_keywords";
+position[17] = "movie_imdb_link";
+position[18] = "num_user_for_reviews";
+position[19] = "language";
+position[20] = "country";
+position[21] = "content_rating";
+position[22] = "budget";
+position[23] = "title_year";
+position[24] = "actor_2_facebook_likes";
+position[25] = "imdb_score";
+position[26] = "aspect_ratio";
+position[27] = "movie_facebook_likes";
+const int numeric[28] = {0,0,1,1,1,1,0,1,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,1,1,1,1,1};
 
-int argchecker( int argc, char *argv[], char* sorting_column, char* output_directory );
+Node* Global;
+const int PRINT = 1;
 
 
 
 int main(int argc, char *argv[]){
 	// Check for good arguments example below
 	// ./sorter -c movie_title -d thisdir -o thatdir
-	
+
 	// More descriptive error messages for bad flags
 	char* sorting_column = NULL;
 	char* sorting_directory = NULL;
 	char* output_directory = NULL;
-	int x;
-	switch (argc) {
-		// "Bad" Input Args
-		// Returns descriptive error message
-		case 0 :
-		case 1 :
-		fprintf(stderr,"%s\n","Not enough input arguments");
-		return -1;
-		case 2 :
-		case 4 :
-		case 6 :
-		fprintf(stderr,"%s\n","Bad number of input arguments");
-		return -1;
-		
-		// "Good" input args
-		// Runs the code below each case
-		// each case below is a subset
-		case 7 :
-		x = 7;
-		if(strcmp(argv[x-2],"-o") == 0){
-			if(output_directory==NULL ){
-				output_directory= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else if(strcmp(argv[x-2],"-d") == 0){
-			if(sorting_directory==NULL ){
-				sorting_directory= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else if(strcmp(argv[x-2],"-c") == 0){
-			if(sorting_column==NULL ){
-				sorting_column= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else{
-			fprintf(stderr,"%s\n","Invalid Flag");
-			return -1;
-		}
-		case 5:
-		x = 5;
-		if(strcmp(argv[x-2],"-o") == 0){
-			if(output_directory==NULL ){
-				output_directory= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else if(strcmp(argv[x-2],"-d") == 0){
-			if(sorting_directory==NULL ){
-				sorting_directory= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else if(strcmp(argv[x-2],"-c") == 0){
-			if(sorting_column==NULL ){
-				sorting_column= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else{
-			fprintf(stderr,"%s\n","Invalid Flag");
-			return -1;
-		}
-		case 3 :
-		x = 3;
-		if(strcmp(argv[x-2],"-o") == 0){
-			if(output_directory==NULL ){
-				output_directory= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else if(strcmp(argv[x-2],"-d") == 0){
-			if(sorting_directory==NULL ){
-				sorting_directory= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else if(strcmp(argv[x-2],"-c") == 0){
-			if(sorting_column==NULL ){
-				sorting_column= argv[x-1];
-			}
-			else{
-				fprintf(stderr,"%s\n","Double set flag");
-				return -1;
-			}
-		}
-		else{
-			fprintf(stderr,"%s\n","Invalid Flag");
-			return -1;
-		}
-		break;
-		
-		// Bad input if over 7 args
-		default:
-		fprintf(stderr,"%s\n","Too many input arguments");
+	int correct_args = argchecker(argc, argv[], sorting_column, sorting_directory, output_directory);
+	if (correct_args<0){
 		return -1;
 	}
 	// Sorting Column must be defined
@@ -171,18 +81,13 @@ int main(int argc, char *argv[]){
 		return(-1);
 	}
 
-	
 	// Print Statements for output
 	if(PRINT ==1 || PRINT ==3 ){
-		
-		
 		printf("Initial PID: %d\n",parent_pid);
 		char message[]  = "PIDS of all child processes: \0";
 		printf("%s",message);
-		
-		
 	}
-	
+
 	// Start sorting process
 	int i = 0;
 	int * count;
@@ -203,7 +108,7 @@ int directory_crawler(char * sorting_directory,char * sorting_column, char * out
 	}
 	int t= 0;
 	while(t==0){
-		
+
 		const char * d_name;
 		dirent = readdir (directory);
 		if (! dirent) {
@@ -243,9 +148,9 @@ int directory_crawler(char * sorting_directory,char * sorting_column, char * out
 					*count= *count +1;
 					directory_crawler(new_directory,sorting_column,output_directory,count);
 				}
-				
+
 			}
-			
+
 		}else{
 			pid_t child = fork();
 			fflush(stdout);
@@ -263,7 +168,7 @@ int directory_crawler(char * sorting_directory,char * sorting_column, char * out
 				*count = *count +1 ;
 				sortCSV(sorting_column,(char*) d_name, output_directory, sorting_directory);
 			}
-			
+
 		}
 	}
 	return 0;
@@ -272,122 +177,45 @@ int directory_crawler(char * sorting_directory,char * sorting_column, char * out
 //argv is what we are sorting by, ddir is output directory
 //Previous ffile and idir are handled outside of method now
 int sortCSV(char *argv, char* ddir){
-	
-	/*	//previous checks
-	
-	// checks to see if ffile is already sorted or not
-	char* sortedd = (char*) malloc(sizeof(char*)*10);
-	sortedd = "-sorted-";
-	if(strstr(ffile,sortedd)!=NULL){
-		if(PRINT ==3){
-			printf("Already Sorted\n");
+
+	Node *front=NULL;
+	Node * ptr = NULL;
+	long llength = 0;
+
+	//new stuff GLOBAL is new char* LL
+
+	Node * Globalptr = NULL;
+	Globalptr = Global;
+
+
+	while(Globalptr!=null){
+		llength++;
+
+
+		if(front == NULL){
+			Node * current = (Node*)malloc(sizeof(Node));
+			char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr.data)*2);
+			strcpy(copystring, Globalptr.data);
+			current->data = copystring;
+			current->next = NULL;
+			front = current;
+			ptr = front;
+
+		}else{
+			Node * current = (Node*)malloc(sizeof(Node));
+			char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr.data)*2);
+			strcpy(copystring, Globalptr.data);
+			//for last input which ends in EOF
+			if(copystring[strlen(copystring)-1]!='\n')
+				copystring[strlen(copystring)] = '\n';
+			current->data = copystring;
+			ptr->next = current;
+			ptr = ptr->next;
+
 		}
-		return -1;
+
+		Globalptr=Globalptr.next;
 	}
-
-	//file + directory
-	char * fffile;
-	fffile = (char*) malloc(sizeof(char*) * (strlen(idir) + strlen(ffile)) );
-
-
-	//Checking directory
-	struct stat stt = {0};
-
-	//Appends idir to beginning of ffile name if input directory exists
-	if(stat(idir, &stt)!= -1){
-		strcpy(fffile,idir);
-		strcat(fffile,ffile);
-	}
-	else{
-		strcpy(fffile,ffile);
-	}
-
-	//check if file exists
-	if(PRINT ==2){
-		printf("FILE PATH is: %s\n", fffile);
-	}
-FILE *fp;
-fp = fopen(fffile,"r");
-
-if(fp==NULL){
-	fprintf(stderr,"File DNExist\n");
-	//fileDoesNotExist
-	return -1;
-}else{
-	//printf("open success\n");
-
-}
-
-//check last 4 letters .csv
-//check if extension is csv file
-char end[5] = "";
-int z=0;
-int h=0;
-for(z=(int)strlen(ffile)-4;z< (int)strlen(ffile);z++){
-end[h]=ffile[z];
-h++;
-}
-if(strcmp(end,".csv")!=0){
-	if(PRINT ==0|| PRINT ==3)
-		printf("notcsv\n");
-	fclose(fp);
-	if(PRINT == 0 || PRINT ==3)
-		printf("one\n");
-	return -1;
-}else{
-	if(PRINT == 2 || PRINT == 0){
-		printf("File is a csv\n");
-		printf("File is : %s\n", ffile);
-		printf("idir is  : %s\n", idir);
-	}
-}
-
-//not CSV files...
-*/
-//Therefore we know we are working with csv file which exists
-//no longer reading file but global char* LL
-
-
-
-Node *front=NULL;
-Node * ptr = NULL;
-long llength = 0;
-
-//new stuff GLOBAL is new char* LL 
-
-Node * Globalptr = NULL;
-Globalptr = Global;
-
-
-while(Globalptr!=null){
-	llength++;
-
-	
-	if(front == NULL){
-		Node * current = (Node*)malloc(sizeof(Node));
-		char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr.data)*2);
-		strcpy(copystring, Globalptr.data);
-		current->data = copystring;
-		current->next = NULL;
-		front = current;
-		ptr = front;
-
-	}else{
-		//printf("one\n");
-		Node * current = (Node*)malloc(sizeof(Node));
-		char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr.data)*2);
-		strcpy(copystring, Globalptr.data);
-		//for last input which ends in EOF
-		if(copystring[strlen(copystring)-1]!='\n')
-			copystring[strlen(copystring)] = '\n';
-		current->data = copystring;
-		ptr->next = current;
-		ptr = ptr->next;
-		
-	}
-	
-	Globalptr=Globalptr.next;
-}
 
 
 
@@ -649,14 +477,14 @@ while(Globalptr!=null){
 
 	char* fileStub = (char*)malloc(strlen(100)*sizeof(char));
 	strcpy(fileStub,"Allfiles");
-	
+
 	/*	Previous removing ".csv" from ending
 	for(i=0;i<4;i++)
 	fileStub[strlen(fileStub)-1] = '\0';
 	*/
 
 	char* newFileName = (char*) malloc((strlen(argv)+100*sizeof(char));
-	
+
 	if(ddir!=NULL){
 		if(PRINT!= 1){
 			printf("ddir is not null\n");
@@ -713,4 +541,392 @@ while(Globalptr!=null){
 
 }
 
+int argchecker( int argc, char *argv[], char* sorting_column, char* sorting_directory ,char* output_directory ){
+	int x;
+	switch (argc) {
+		// "Bad" Input Args
+		// Returns descriptive error message
+		case 0 :
+		case 1 :
+		fprintf(stderr,"%s\n","Not enough input arguments");
+		return -1;
+		case 2 :
+		case 4 :
+		case 6 :
+		fprintf(stderr,"%s\n","Bad number of input arguments");
+		return -1;
 
+		// "Good" input args
+		// Runs the code below each case
+		// each case below is a subset
+		case 7 :
+		x = 7;
+		if(strcmp(argv[x-2],"-o") == 0){
+			if(output_directory==NULL ){
+				output_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-d") == 0){
+			if(sorting_directory==NULL ){
+				sorting_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-c") == 0){
+			if(sorting_column==NULL ){
+				sorting_column= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else{
+			fprintf(stderr,"%s\n","Invalid Flag");
+			return -1;
+		}
+		case 5:
+		x = 5;
+		if(strcmp(argv[x-2],"-o") == 0){
+			if(output_directory==NULL ){
+				output_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-d") == 0){
+			if(sorting_directory==NULL ){
+				sorting_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-c") == 0){
+			if(sorting_column==NULL ){
+				sorting_column= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else{
+			fprintf(stderr,"%s\n","Invalid Flag");
+			return -1;
+		}
+		case 3 :
+		x = 3;
+		if(strcmp(argv[x-2],"-o") == 0){
+			if(output_directory==NULL ){
+				output_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-d") == 0){
+			if(sorting_directory==NULL ){
+				sorting_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-c") == 0){
+			if(sorting_column==NULL ){
+				sorting_column= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else{
+			fprintf(stderr,"%s\n","Invalid Flag");
+			return -1;
+		}
+		break;
+
+		// Bad input if over 7 args
+		default:
+		fprintf(stderr,"%s\n","Too many input arguments");
+		return -1;
+}
+
+
+//Where argv is what we're sorting by , file, output directory
+int addCSV(char *argv, char* file_name, char* input_directory){
+
+	//file + directory
+	char * full_file_path;
+	full_file_path = (char*) malloc(sizeof(char*) * (strlen(input_directory) + strlen(file_name)) );
+
+	//Checking directory status
+	struct stat stt = {0};
+
+	//Appends input_directory to beginning of file_name name if input directory exists
+	if(stat(input_directory, &stt)!= -1){
+		strcpy(full_file_path,input_directory);
+		strcat(full_file_path,file_name);
+	}
+	else{
+		strcpy(full_file_path,file_name);
+	}
+
+	//check if file exists
+    FILE *fp;
+    fp = fopen(full_file_path,"r");
+
+    //fileDoesNotExist
+    if(fp==NULL){
+        fprintf(stderr,"File DNExist\n");
+        return -1;
+    }
+    //check last 4 letters .csv
+    //check if extension is csv file
+    char end[5] = "";
+    int z=0;
+    int h=0;
+    for(z=(int)strlen(file_name)-4;z< (int)strlen(file_name);z++){
+        end[h]=file_name[z];
+        h++;
+    }
+    if(strcmp(end,".csv")!=0){
+        fclose(fp);
+	    return -1;
+    }
+
+    //Therefore we know we are working with csv file which exists
+
+    char * buffer = NULL;
+    size_t len = 0;
+    Node * local = NULL;
+    Node * ptr  = NULL;
+    long llength = 0;
+
+    // make local linked list of movies
+
+    // Reading CSV files
+
+    // read first line (header row)
+    getline(&buffer, &len, fp);
+    char * header = buffer;
+    int column_number = column_finder(header);
+    int key[column_number];
+    int z = keymaker(header, column_number, key);
+    if ( z <0){
+        // maybe add which file
+        fprintf(stderr,"%d %s\n",z," :# of bad columns found");
+    	return -1;
+    }
+    // read other rows (movie rows)
+    while((getline(&buffer, &len, fp)!=-1)){
+        char *movie_array[28];
+        // if one movie does not have the correct number of columns, the file is bad and all the movies do not get added to the list
+    	if( column_finder(buffer)!=  column_number){
+            return -1;
+        }
+        // For every column serparate by comma and find column data
+        for(i=0; i<column_number;i++){
+            char* data= column_reader(header,i);
+            movie_array[key[i]]= data;
+            // convert movie array to string
+            int j;
+            char* movie_string = (char*) malloc((strlen(buffer)+column_number+10)*sizeof(char*));
+            for(j=0; j<28;j++){
+                if(j==28){
+                    if( movie_array[i]!= NULL){
+                        strcat(movie_string,movie_array[i]);
+                    }
+                    // might be null terminator
+                    strcat(movie_string,"\n");
+                }
+                if( movie_array[i]!= NULL){
+                    strcat(movie_string,movie_array[i]);
+                }
+                strcat(movie_string,",");
+            }
+            // add to local linked list
+
+            if(local == NULL){
+        		Node * movie = (Node*)malloc(sizeof(Node));
+        		movie->data = movie_string;
+        		movie->next = NULL;
+        		local = movie;
+        		ptr = local;
+
+        	}else{
+                Node * movie = (Node*)malloc(sizeof(Node));
+        		movie->data = movie_string;
+        		ptr->next = movie;
+        		ptr = ptr->next;
+        	}
+
+        }
+    }
+
+    // add to global linked list
+    Node * temp  = NULL;
+    temp = GLOBAL;
+    while(temp){
+        temp= temp->next;
+    }
+    temp = local;
+
+	return 0;
+
+}
+
+
+//Input: header,number of columns in header, key array Output: string in column
+int keymaker(char* header,int column_number,int[] key){
+    // Initialize variables
+    int length = strlen(header);
+    int i;
+
+    // For every column, serparate by comma and find heading
+    for(i=0; i<column_number;i++){
+        char* column= column_reader(header,i);
+        int j;
+        int all_correct=0;
+        // For every heading, match to find its position in global
+        for(j=0;j<27;j++){
+            // if match add to key
+            if(strcmp(column,position[i])==0){
+                key[i]= j;
+                continue;
+            }
+            else{
+                if(j == 27){
+                    all_correct--;
+                }
+            }
+        }
+    }
+    return all_correct;
+
+}
+// finds column number
+// almost the same as column_reader
+// input:row, output: column number
+int column_finder(char* row){
+	// loop setup
+	int commas = 0;
+	int inquotes = 0;
+	int i= 0;
+    int length = strlen(row);
+
+	//counts commas to find column number
+	while(i<length){
+		char c = row[i];
+		// quote check
+		if(c =='"'){
+			if(inquotes ==0)
+					inquotes--;
+			else
+				inquotes++;
+		}
+		// if in quotes do not count commas
+		if(inquotes == 0){
+			if(c == ',')
+				commas++;
+		}
+		i++;
+	}
+	// There are 1 less comma than column number;
+	return commas+1;
+}
+
+
+
+//Input: Column number and row string, Output: string in column
+char* column_reader(char* row, int column){
+	int commas = column; 	// There are 1 less comma than column number
+	int diff=0; 	// Store beginning and end index
+	int end;
+
+	// If parenthesis for movie title, there is a comma in the title
+	// using int as pseudo boolean. 0 for false 1 for true
+	int inquotes = 0;
+  int quoted=0;
+  int last=0;
+	// Setup for loop
+	int i=0;
+
+	while(commas>0){
+
+		if(commas == 1){
+			diff++;
+      if(inquotes!=0){
+        quoted++;
+      }
+		}
+		char c = row[i];
+
+    if(c=='\n'){
+      last++;
+      break;
+    }
+
+		// quote check
+		if(c =='"'){
+			if(inquotes ==0){
+				inquotes--;
+			}
+			else{
+				inquotes++;
+			}
+		}
+		// if in quotes do not count commas
+		if(inquotes == 0){
+			if(c == ','){
+				commas--;
+			}
+		}
+		i++;
+	}
+
+  end= i-1;
+
+	// includes the commas so +1 and -1 at the end
+	int start = end-diff+1;
+	diff--;
+  //diff--;
+  if(diff==0){
+    return NULL;
+  }
+  if(last>0){
+    start++;
+    diff--;
+  }
+  if(quoted>0){
+    start++;
+    diff= diff-2;
+  }
+	// for storing the output
+
+
+  char* column_string = (char*) malloc(diff*sizeof(char*));
+  int x = 0;
+  while (x<diff) {
+    column_string[x]=row[start];
+    x++;
+    start++;
+  }
+
+  column_string[diff]='\0';
+  return column_string;
+}
