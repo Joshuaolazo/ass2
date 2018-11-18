@@ -22,6 +22,10 @@ void mergesorter(Node** front);
 int directory_crawler(char*,char*,char*, int *);
 int sortCSV(char *, char* , char* ,char*);
 int isNumeric(char*);
-
+char* column_reader(char* , int );
+int column_finder(char*);
+int keymaker(char*,int ,int[]);
+int addCSV(char *, char* , char* );
+int argchecker( int , char*[], char* , char* ,char*);
 
 #endif /* multiThreadSorter_thread_h */
