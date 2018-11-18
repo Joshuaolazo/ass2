@@ -21,7 +21,7 @@
 
 int PRINT = 1;
 
-int argchecker( int argc, char *argv[], char* sorting_column, char* output_directory )
+int argchecker( int argc, char *argv[], char* sorting_column, char* output_directory );
 
 
 
@@ -671,4 +671,5 @@ int sortCSV(char *argv, char* ffile, char* ddir, char* idir){
 	return 0;
 	
 }
+
 
