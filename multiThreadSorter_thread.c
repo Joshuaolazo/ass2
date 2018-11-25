@@ -156,9 +156,10 @@ TIDNode * directory_crawler( void * param ){
 				directory_args-> output_directory = output_directory;
 				*count = *count +1 ;
 				directory_args-> count = count;
+				fflush(stdout);
 				pthread_t cThread;
 				if(pthread_create(&cThread, NULL, directory_crawler, (void *) directory_args)){
-    				printf("Pthread creation error");
+    				fprintf(stderr,"Pthread creation error");
 				}else{
 					pthread_join(cThread, &status);
 
@@ -181,6 +182,7 @@ TIDNode * directory_crawler( void * param ){
 			}
 
 		}else{
+			fflush(stdout);
 			addCSVargs * csv_args = malloc(sizeof(addCSVargs));
 			csv_args-> sorting_column = sorting_column;
 			csv_args-> input_directory = sorting_directory;
