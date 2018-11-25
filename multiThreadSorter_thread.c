@@ -223,7 +223,7 @@ TIDNode * directory_crawler( void * param ){
 
 
 //Where argv is what we're sorting by , file, output directory
-TIDNode * addCSV(addCSVargs* param){
+int addCSV(void* param){
 
 
 
@@ -358,12 +358,8 @@ TIDNode * addCSV(addCSVargs* param){
 	printf("%s",message);
 	printf("\nTotal number of threads: %d\n", 0);
 
-	// tid not nessessary
-	TIDNode * tid = malloc(sizeof(TIDNode));
-	tid->TID = 000000;
-	tid->next = NULL;
-	return tid;
 
+	return 0;
 }
 
 

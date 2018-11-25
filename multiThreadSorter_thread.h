@@ -45,7 +45,7 @@ int isNumeric(char*);
 char* column_reader(char* , int );
 int column_finder(char*);
 int keymaker(char*,int ,int[]);
-TIDNode * addCSV( void* param);
+int addCSV( void* param);
 int argchecker( int , char*[], char* , char* ,char*);
 
 #endif /* multiThreadSorter_thread_h */
