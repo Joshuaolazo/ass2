@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
 }
 
 
-TIDNode * directory_crawler( void * args ){
+TIDNode * directory_crawler( void * param ){
 	TIDNode * tidlist = (TIDNode*) malloc(sizeof(TIDNode));
 	directory_crawlerargs *  args= (directory_crawlerargs * )param;
 	char * sorting_directory = args->sorting_directory;
@@ -223,7 +223,7 @@ TIDNode * directory_crawler( void * args ){
 
 
 //Where argv is what we're sorting by , file, output directory
-TIDNode * addCSV(addCSVargs* Parameter){
+TIDNode * addCSV(addCSVargs* param){
 
 
 
