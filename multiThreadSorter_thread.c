@@ -64,9 +64,11 @@ typedef struct _directory_crawlerargs{
 	char* sorting_directory;
 	char* sorting_column;
 	char* output_directory;
-	int* count
+	int* count;
+	pthread_t tid[255];
 }directory_crawlerargs;
 
+pthread_mutex_t lock;
 
 int main(int argc, char *argv[]){
 	// Check for good arguments example below
@@ -95,13 +97,20 @@ int main(int argc, char *argv[]){
 		return(-1);
 	}
 
-	// Print Statements for output
-	if(PRINT ==1 || PRINT ==3 ){
-		int parent_pid= getpid();
-		printf("Initial PID: %d\n",parent_pid);
-		char message[]  = "TIDS of all spawned threads: \0";
-		printf("%s",message);
+	// Mutex lock Initial
+	if (pthread_mutex_init(&lock, NULL) != 0){
+		fprintf(stderr,"\n Mutex Initialize failed\n");
+		return -1;
 	}
+
+	pthread_t tid[255];
+
+	// Meta Data
+	int parent_pid= getpid();
+	printf("Initial PID: %d\n",parent_pid);
+	char message[]  = "TIDS of all spawned threads: \0";
+	printf("%s",message);
+	printf("\nTotal number of threads: %d\n", *count);
 
 	// Start sorting process
 	int i = 0;
@@ -113,7 +122,10 @@ int main(int argc, char *argv[]){
 	original_args-> output_directory = output_directory;
 	original_args-> count = count;
 	int  x = directory_crawler(original_args);
-	printf("\nTotal number of threads: %d\n", *count);
+
+
+	pthread_mutex_destroy(&lock);
+
 	return x;
 }
 
@@ -795,15 +807,15 @@ int addCSV(addCSVargs* args){
 
         }
     }
-
     // add to global linked list
+	pthread_mutex_lock(&lock);
     Node * temp  = NULL;
     temp = GLOBAL;
     while(temp){
         temp= temp->next;
     }
     temp = local;
-
+	pthread_mutex_unlock(&lock); 
 	return 0;
 
 }
