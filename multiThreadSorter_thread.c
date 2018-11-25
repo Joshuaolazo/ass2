@@ -30,6 +30,8 @@ const int PRINT = 1;
 pthread_mutex_t lock;
 
 int main(int argc, char *argv[]){
+	// Make space for Global
+	Global = malloc(sizeof(Node));
 	// Check for good arguments example below
 	// ./sorter -c movie_title -d thisdir -o thatdir
 
@@ -648,7 +650,7 @@ int argchecker( int argc, char *argv[], char* sorting_column, char* sorting_dire
 		default:
 		fprintf(stderr,"%s\n","Too many input arguments");
 		return -1;
-	}	
+	}
 }
 
 
@@ -727,6 +729,7 @@ int addCSV(addCSVargs* args){
     	if( column_finder(buffer)!=  column_number){
             return -1;
         }
+		int i;
         // For every column serparate by comma and find column data
         for(i=0; i<column_number;i++){
             char* data= column_reader(header,i);
@@ -768,7 +771,7 @@ int addCSV(addCSVargs* args){
     // add to global linked list
 	pthread_mutex_lock(&lock);
     Node * temp  = NULL;
-    temp = GLOBAL;
+    temp = Global;
     while(temp){
         temp= temp->next;
     }
