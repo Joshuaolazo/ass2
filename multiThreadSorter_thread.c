@@ -26,19 +26,6 @@ const int numeric[28] = {0,0,1,1,1,1,0,1,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,1,1,1,1,1
 Node* Global;
 const int PRINT = 1;
 
-typedef struct _addCSVargs{
-	char* sorting_column;
-	char* file_name;
-	char* input_directory;
-}addCSVargs;
-
-typedef struct _directory_crawlerargs{
-	char* sorting_directory;
-	char* sorting_column;
-	char* output_directory;
-	int* count;
-	pthread_t tid[255];
-}directory_crawlerargs;
 
 pthread_mutex_t lock;
 
