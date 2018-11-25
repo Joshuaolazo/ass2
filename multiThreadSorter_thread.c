@@ -20,7 +20,7 @@
 #include <pthread.h>
 #include "multiThreadSorter_thread.h"
 
-const char* position[28];
+const char position[28];
 position[0] = "color";
 position[1] = "director_name";
 position[2] = "num_critic_for_reviews";
@@ -815,7 +815,7 @@ int addCSV(addCSVargs* args){
         temp= temp->next;
     }
     temp = local;
-	pthread_mutex_unlock(&lock); 
+	pthread_mutex_unlock(&lock);
 	return 0;
 
 }
