@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
 }
 
 
-TIDNode * directory_crawler( void * param ){
+void * directory_crawler( void * param ){
 	TIDNode * tidlist = (TIDNode*) malloc(sizeof(TIDNode));
 	directory_crawlerargs *  args= (directory_crawlerargs * )param;
 	char * sorting_directory = args->sorting_directory;
@@ -216,13 +216,13 @@ TIDNode * directory_crawler( void * param ){
 	printf("\nTotal number of threads: %d\n", threadcount);
 
 
-	return tidlist;
+	return (void*) tidlist;
 }
 
 
 
 //Where argv is what we're sorting by , file, output directory
-int addCSV(void* param){
+void * addCSV(void* param){
 
 
 
@@ -358,7 +358,7 @@ int addCSV(void* param){
 	printf("\nTotal number of threads: %d\n", 0);
 
 
-	return 0;
+	return (void *)0;
 }
 
 
