@@ -35,7 +35,7 @@ Node* merge(Node* one, Node* two);
 void half( Node* base, Node** first,  Node** last);
 void mergesorter(Node** front);
 int directory_crawler(directory_crawlerargs* args);
-int sortCSV(char *, char* , char* ,char*);
+int sortCSV(char *, char*);
 int isNumeric(char*);
 char* column_reader(char* , int );
 int column_finder(char*);

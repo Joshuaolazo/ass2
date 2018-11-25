@@ -524,7 +524,7 @@ int sortCSV(char *argv, char* ddir){
 	free(front);
 	 */
 	return 0;
-
+}
 int argchecker( int argc, char *argv[], char* sorting_column, char* sorting_directory ,char* output_directory ){
 	int x;
 	switch (argc) {
@@ -648,6 +648,7 @@ int argchecker( int argc, char *argv[], char* sorting_column, char* sorting_dire
 		default:
 		fprintf(stderr,"%s\n","Too many input arguments");
 		return -1;
+	}	
 }
 
 
