@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
 	char* sorting_column = NULL;
 	char* sorting_directory = NULL;
 	char* output_directory = NULL;
-	int correct_args = argchecker(argc, argv[], sorting_column, sorting_directory, output_directory);
+	int correct_args = argchecker(argc, argv, sorting_column, sorting_directory, output_directory);
 	if (correct_args<0){
 		return -1;
 	}
@@ -77,13 +77,6 @@ int main(int argc, char *argv[]){
 
 	pthread_t tid[255];
 
-	// Meta Data
-	int parent_pid= getpid();
-	printf("Initial PID: %d\n",parent_pid);
-	char message[]  = "TIDS of all spawned threads: \0";
-	printf("%s",message);
-	printf("\nTotal number of threads: %d\n", *count);
-
 	// Start sorting process
 	int i = 0;
 	int * count;
@@ -94,7 +87,12 @@ int main(int argc, char *argv[]){
 	original_args-> output_directory = output_directory;
 	original_args-> count = count;
 	int  x = directory_crawler(original_args);
-
+	// Meta Data
+	int parent_pid= getpid();
+	printf("Initial PID: %d\n",parent_pid);
+	char message[]  = "TIDS of all spawned threads: \0";
+	printf("%s",message);
+	printf("\nTotal number of threads: %d\n", *count);
 
 	pthread_mutex_destroy(&lock);
 
