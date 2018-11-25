@@ -713,8 +713,8 @@ int addCSV(addCSVargs* args){
     char * header = buffer;
     int column_number = column_finder(header);
     int key[column_number];
-    int z = keymaker(header, column_number, key);
-    if ( z <0){
+    int kz = keymaker(header, column_number, key);
+    if ( kz <0){
         // maybe add which file
         fprintf(stderr,"%d %s\n",z," :# of bad columns found");
     	return -1;
