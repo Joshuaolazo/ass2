@@ -803,11 +803,12 @@ int keymaker(char* header,int column_number,int key[]){
             else{
                 if(j == 27){
                     all_correct--;
+					return -1;
                 }
             }
         }
     }
-    return all_correct;
+    return 0;
 
 }
 // finds column number
