@@ -783,7 +783,7 @@ int addCSV(addCSVargs* args){
 
 
 //Input: header,number of columns in header, key array Output: string in column
-int keymaker(char* header,int column_number,int[] key){
+int keymaker(char* header,int column_number,int key[]){
     // Initialize variables
     int length = strlen(header);
     int i;
