@@ -796,7 +796,7 @@ int keymaker(char* header,int column_number,int key[]){
         // For every heading, match to find its position in global
         for(j=0;j<27;j++){
             // if match add to key
-            if(strcmp(column,i])==0){
+            if(strcmp(column,position[i])==0){
                 key[i]= j;
                 continue;
             }
