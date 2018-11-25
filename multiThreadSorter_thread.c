@@ -16,6 +16,8 @@
 #include <ctype.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <pthread.h>
 #include "multiThreadSorter_thread.h"
 
 const char* position[28];
@@ -52,6 +54,18 @@ const int numeric[28] = {0,0,1,1,1,1,0,1,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,1,1,1,1,1
 Node* Global;
 const int PRINT = 1;
 
+typedef struct _addCSVargs{
+	char* sorting_column;
+	char* file_name;
+	char* input_directory;
+}addCSVargs;
+
+typedef struct _directory_crawlerargs{
+	char* sorting_directory;
+	char* sorting_column;
+	char* output_directory;
+	int* count
+}directory_crawlerargs;
 
 
 int main(int argc, char *argv[]){
@@ -93,13 +107,23 @@ int main(int argc, char *argv[]){
 	int i = 0;
 	int * count;
 	count = &i;
-	int  x = directory_crawler(sorting_directory, sorting_column, output_directory,count);
+	directory_crawlerargs * original_args = malloc(sizeof(directory_crawlerargs));
+	origninal_args-> sorting_directory = sorting_directory;
+	origninal_args-> sorting_column = sorting_column;
+	origninal_args-> output_directory = output_directory;
+	origninal_args-> count = count;
+	int  x = directory_crawler(original_args);
 	printf("\nTotal number of threads: %d\n", *count);
 	return x;
 }
 
 
-int directory_crawler(char * sorting_directory,char * sorting_column, char * output_directory, int * count){
+int directory_crawler( directory_crawlerargs * args ){
+	char * sorting_directory = args->sorting_directory;
+	char * sorting_column = args->sorting_column;
+	char * output_directory= args->output_directory;
+	int * count= args->count;
+
 	DIR *directory;
 	struct dirent *dirent;
 	directory = opendir(sorting_directory);
@@ -665,7 +689,10 @@ int argchecker( int argc, char *argv[], char* sorting_column, char* sorting_dire
 
 
 //Where argv is what we're sorting by , file, output directory
-int addCSV(char *argv, char* file_name, char* input_directory){
+int addCSV(addCSVargs* args){
+	char *argv = args->sorting_column;
+	char* file_name = args->file_name;
+	char* input_directory = args->input_directory;
 
 	//file + directory
 	char * full_file_path;
