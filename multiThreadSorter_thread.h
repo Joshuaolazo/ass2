@@ -33,7 +33,7 @@ typedef struct _directory_crawlerargs{
 typedef struct _TIDNode{
 	int TID;
 	struct _TIDNode * next;
-}Node;
+}TIDNode;
 
 
 Node* merge(Node* one, Node* two);
