@@ -32,7 +32,7 @@ pthread_mutex_t lock2;
 
 int main(int argc, char *argv[]){
 	// Make space for Global
-	Global = malloc(sizeof(Node));
+	Global = (Node*) malloc(sizeof(Node));
 	// Check for good arguments example below
 	// ./sorter -c movie_title -d thisdir -o thatdir
 
@@ -75,13 +75,13 @@ int main(int argc, char *argv[]){
 	int i = 0;
 	int * count;
 	count = &i;
-	directory_crawlerargs * original_args = malloc(sizeof(directory_crawlerargs));
+	directory_crawlerargs * original_args = (directory_crawlerargs*)malloc(sizeof(directory_crawlerargs));
 	original_args-> sorting_directory = sorting_directory;
 	original_args-> sorting_column = sorting_column;
 	original_args-> output_directory = output_directory;
 	original_args-> count = count;
 
-	TIDNode * tidlist = malloc(sizeof(TIDNode));
+	TIDNode * tidlist = (TIDNode*) malloc(sizeof(TIDNode));
 
 	tidlist = directory_crawler(original_args);
 
@@ -108,8 +108,8 @@ int main(int argc, char *argv[]){
 
 
 TIDNode * directory_crawler( void * args ){
-	TIDNode * tidlist = malloc(sizeof(TIDNode));
-	directory_crawlerargs *  args= (irectory_crawlerargs * )param;
+	TIDNode * tidlist = (TIDNode*) malloc(sizeof(TIDNode));
+	directory_crawlerargs *  args= (directory_crawlerargs * )param;
 	char * sorting_directory = args->sorting_directory;
 	char * sorting_column = args->sorting_column;
 	char * output_directory= args->output_directory;
@@ -120,7 +120,7 @@ TIDNode * directory_crawler( void * args ){
 	directory = opendir(sorting_directory);
 	if( !directory){
 		fprintf(stderr,"Cannot open directory: %s\n", strerror (errno));
-		return -1;
+		return tidlist;
 	}
 	int t= 0;
 	void* status;
@@ -168,13 +168,13 @@ TIDNode * directory_crawler( void * args ){
 					tid->next = tidlist;
 					tidlist= tid;
 
-					TIDNode * return = malloc(sizeof(TIDNode));
-					return = (TIDNode *)status;		
+					TIDNode * ret = malloc(sizeof(TIDNode));
+					ret = (TIDNode *)status;
 					TIDNode * ptr = tidlist;
 					while(ptr->next != NULL){
 							ptr = ptr->next;
 					}
-					ptr->next = return;
+					ptr->next = ret;
 					pthread_mutex_unlock(&lock2);
 				}
 
