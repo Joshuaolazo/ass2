@@ -39,13 +39,13 @@ typedef struct _TIDNode{
 Node* merge(Node* one, Node* two);
 void half( Node* base, Node** first,  Node** last);
 void mergesorter(Node** front);
-TIDNode * directory_crawler(void* param);
+void * directory_crawler(void* param);
 int sortCSV(char *, char*);
 int isNumeric(char*);
 char* column_reader(char* , int );
 int column_finder(char*);
 int keymaker(char*,int ,int[]);
-int addCSV( void* param);
+void * addCSV( void* param);
 int argchecker( int , char*[], char* , char* ,char*);
 
 #endif /* multiThreadSorter_thread_h */
