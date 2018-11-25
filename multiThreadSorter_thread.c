@@ -254,7 +254,7 @@ void * addCSV(void* param){
     //fileDoesNotExist
     if(fp==NULL){
         fprintf(stderr,"File DNExist\n");
-        return -1;
+        return (void*) -1;
     }
     //check last 4 letters .csv
     //check if extension is csv file
@@ -267,7 +267,7 @@ void * addCSV(void* param){
     }
     if(strcmp(end,".csv")!=0){
         fclose(fp);
-	    return -1;
+	    return (void*) -1;
     }
 
     //Therefore we know we are working with csv file which exists
@@ -291,14 +291,14 @@ void * addCSV(void* param){
     if ( kz <0){
         // maybe add which file
         fprintf(stderr,"%d %s\n",z," :# of bad columns found");
-    	return -1;
+    	return (void*) -1;
     }
     // read other rows (movie rows)
     while((getline(&buffer, &len, fp)!=-1)){
         char *movie_array[28];
         // if one movie does not have the correct number of columns, the file is bad and all the movies do not get added to the list
     	if( column_finder(buffer)!=  column_number){
-            return -1;
+            return (void*) -1;
         }
 		int i;
         // For every column serparate by comma and find column data
