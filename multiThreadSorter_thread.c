@@ -188,14 +188,14 @@ int sortCSV(char *argv, char* ddir){
 	Globalptr = Global;
 
 
-	while(Globalptr!=null){
+	while(Globalptr!=NULL){
 		llength++;
 
 
 		if(front == NULL){
 			Node * current = (Node*)malloc(sizeof(Node));
-			char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr.data)*2);
-			strcpy(copystring, Globalptr.data);
+			char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr->data)*2);
+			strcpy(copystring, Globalptr->data);
 			current->data = copystring;
 			current->next = NULL;
 			front = current;
@@ -203,8 +203,8 @@ int sortCSV(char *argv, char* ddir){
 
 		}else{
 			Node * current = (Node*)malloc(sizeof(Node));
-			char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr.data)*2);
-			strcpy(copystring, Globalptr.data);
+			char * copystring = (char *)malloc(sizeof(char)*strlen(Globalptr->data)*2);
+			strcpy(copystring, Globalptr->data);
 			//for last input which ends in EOF
 			if(copystring[strlen(copystring)-1]!='\n')
 				copystring[strlen(copystring)] = '\n';
@@ -214,7 +214,7 @@ int sortCSV(char *argv, char* ddir){
 
 		}
 
-		Globalptr=Globalptr.next;
+		Globalptr=Globalptr->next;
 	}
 
 
@@ -303,11 +303,9 @@ int sortCSV(char *argv, char* ddir){
 		}
 		/*
 		printf("start one\n");
-
 		printf("start two\n");
 		printf("Temp data is: %s", temp1->data);
 		printf("Size of malloc is: %lu\n",sizeof(char)*strlen(temp1->data));
-
 		*/
 		char *find = (char*)malloc(sizeof(char)*strlen(temp1->data));
 		char * copy = (char *)malloc(sizeof(char)*strlen(temp1->data));
@@ -399,7 +397,7 @@ int sortCSV(char *argv, char* ddir){
 		if(commacheck-totalfakes!=commamax-1){
 			//ignore formatted incorrectly
 			fprintf(stderr, "%s\n","Error: Inconsistent commas between rows.");
-			fclose(fp);
+			//fclose(fp);
 			return -1;
 		}
 		//THERE WERE COMMAS IN PARENTHESES
@@ -454,7 +452,7 @@ int sortCSV(char *argv, char* ddir){
 	if(notfound==1){
 		//ignore
 		fprintf(stderr, "%s\n","Error: Parameter not found.");
-		fclose(fp);
+		//fclose(fp);
 		if(PRINT == 0 || PRINT ==3 )
 			printf("three\n");
 		return -1;
@@ -475,7 +473,7 @@ int sortCSV(char *argv, char* ddir){
 
 	//creating new CSV file
 
-	char* fileStub = (char*)malloc(strlen(100)*sizeof(char));
+	char* fileStub = (char*)malloc((100)*sizeof(char));
 	strcpy(fileStub,"Allfiles");
 
 	/*	Previous removing ".csv" from ending
@@ -483,20 +481,20 @@ int sortCSV(char *argv, char* ddir){
 	fileStub[strlen(fileStub)-1] = '\0';
 	*/
 
-	char* newFileName = (char*) malloc((strlen(argv)+100*sizeof(char));
+	char* newFileName = (char*) malloc(strlen(argv)+100*sizeof(char));
 
 	if(ddir!=NULL){
 		if(PRINT!= 1){
 			printf("ddir is not null\n");
 			printf("ddir is: %s\n", ddir);
-			printf("idir is: %s\n", idir);
+			//printf("idir is: %s\n", idir);
 		}
 		strcpy(newFileName,ddir);
 		strcat(newFileName,fileStub);
 	}else{
 		if(PRINT!= 1){
 			printf("ddir is: %s\n", ddir);
-			printf("idir is: %s\n", idir);
+			//printf("idir is: %s\n", idir);
 		}
 		//strcpy(newFileName,idir);
 		strcpy(newFileName,fileStub);
@@ -507,7 +505,7 @@ int sortCSV(char *argv, char* ddir){
 	if(PRINT== 0 || PRINT ==3 )
 		printf("%s\n",newFileName);
 
-	fclose(fp);
+	//fclose(fp);
 
 	FILE *new;
 	new = fopen(newFileName, "w+");
@@ -538,8 +536,6 @@ int sortCSV(char *argv, char* ddir){
 	free(front);
 	 */
 	return 0;
-
-}
 
 int argchecker( int argc, char *argv[], char* sorting_column, char* sorting_directory ,char* output_directory ){
 	int x;
