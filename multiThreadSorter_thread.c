@@ -83,8 +83,9 @@ int main(int argc, char *argv[]){
 
 	// Print Statements for output
 	if(PRINT ==1 || PRINT ==3 ){
+		int parent_pid= getpid();
 		printf("Initial PID: %d\n",parent_pid);
-		char message[]  = "PIDS of all child processes: \0";
+		char message[]  = "TIDS of all spawned threads: \0";
 		printf("%s",message);
 	}
 
@@ -93,7 +94,7 @@ int main(int argc, char *argv[]){
 	int * count;
 	count = &i;
 	int  x = directory_crawler(sorting_directory, sorting_column, output_directory,count);
-	printf("\nTotal number of processes: %d\n", *count);
+	printf("\nTotal number of threads: %d\n", *count);
 	return x;
 }
 
