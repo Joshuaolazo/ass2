@@ -136,7 +136,7 @@ int directory_crawler( directory_crawlerargs * args ){
 				*count = *count +1 ;
 				directory_args-> count = count;
 				pthread_t cThread;
-				if(pthread_create(&cThread, NULL, directory_crawler, directory_args)){
+				if(pthread_create(&cThread, NULL, directory_crawler, (void *) directory_args)){
     				printf("Pthread creation error");
 				}else{
 					printf("%d\n", cThread);
@@ -153,7 +153,7 @@ int directory_crawler( directory_crawlerargs * args ){
 			csv_args-> file_name = (char*) d_name;
 			*count = *count +1;
 			pthread_t cThread;
-			if(pthread_create(&cThread, NULL, addCSV, csv_args)){
+			if(pthread_create(&cThread, NULL, addCSV, (void *) csv_args)){
 				printf("Pthread creation error");
 			}else{
 				printf("%d\n", cThread);
