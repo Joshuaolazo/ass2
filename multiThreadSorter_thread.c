@@ -20,7 +20,7 @@
 #include <pthread.h>
 #include "multiThreadSorter_thread.h"
 
-const char position[28];
+char* position[28];
 position[0] = "color";
 position[1] = "director_name";
 position[2] = "num_critic_for_reviews";
