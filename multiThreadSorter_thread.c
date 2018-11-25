@@ -28,6 +28,7 @@ const int PRINT = 1;
 
 
 pthread_mutex_t lock;
+pthread_mutex_t lock2;
 
 int main(int argc, char *argv[]){
 	// Make space for Global
@@ -63,6 +64,10 @@ int main(int argc, char *argv[]){
 		fprintf(stderr,"\n Mutex Initialize failed\n");
 		return -1;
 	}
+	if (pthread_mutex_init(&lock2, NULL) != 0){
+		fprintf(stderr,"\n Mutex Initialize failed\n");
+		return -1;
+	}
 
 	pthread_t tid[255];
 
@@ -75,21 +80,36 @@ int main(int argc, char *argv[]){
 	original_args-> sorting_column = sorting_column;
 	original_args-> output_directory = output_directory;
 	original_args-> count = count;
-	int  x = directory_crawler(original_args);
-	// Meta Data
+
+	TIDNode * tidlist = malloc(sizeof(TIDNode));
+
+	tidlist = directory_crawler(original_args);
+
+
+
+
+	// Meta Data Print
+	int threadcount  =0;
 	int parent_pid= getpid();
 	printf("Initial PID: %d\n",parent_pid);
 	char message[]  = "TIDS of all spawned threads: \0";
+	while(tidlist){
+		printf("%s, ", tidlist->TID );
+		threadcount++;
+	}
 	printf("%s",message);
-	printf("\nTotal number of threads: %d\n", *count);
+	printf("\nTotal number of threads: %d\n", threadcount);
 
 	pthread_mutex_destroy(&lock);
+	pthread_mutex_destroy(&lock2);
 
-	return x;
+	return 0;
 }
 
 
-int directory_crawler( directory_crawlerargs * args ){
+TIDNode * directory_crawler( void * args ){
+	TIDNode * tidlist = malloc(sizeof(TIDNode));
+	directory_crawlerargs *  args= (irectory_crawlerargs * )param;
 	char * sorting_directory = args->sorting_directory;
 	char * sorting_column = args->sorting_column;
 	char * output_directory= args->output_directory;
@@ -103,6 +123,7 @@ int directory_crawler( directory_crawlerargs * args ){
 		return -1;
 	}
 	int t= 0;
+	void* status;
 	while(t==0){
 
 		const char * d_name;
@@ -139,10 +160,23 @@ int directory_crawler( directory_crawlerargs * args ){
 				if(pthread_create(&cThread, NULL, directory_crawler, (void *) directory_args)){
     				printf("Pthread creation error");
 				}else{
-					printf("%d\n", cThread);
+					pthread_join(cThread, &status);
+
+					pthread_mutex_lock(&lock2);
+					TIDNode * tid = malloc(sizeof(TIDNode));
+					tid->TID = cThread;
+					tid->next = tidlist;
+					tidlist= tid;
+
+					TIDNode * return = malloc(sizeof(TIDNode));
+					return = (TIDNode *)status;		
+					TIDNode * ptr = tidlist;
+					while(ptr->next != NULL){
+							ptr = ptr->next;
+					}
+					ptr->next = return;
+					pthread_mutex_unlock(&lock2);
 				}
-
-
 
 			}
 
@@ -156,13 +190,182 @@ int directory_crawler( directory_crawlerargs * args ){
 			if(pthread_create(&cThread, NULL, addCSV, (void *) csv_args)){
 				printf("Pthread creation error");
 			}else{
-				printf("%d\n", cThread);
+
+
+				pthread_join(cThread, &status);
+
+				pthread_mutex_lock(&lock2);
+				TIDNode * tid = malloc(sizeof(TIDNode));
+				tid->TID = cThread;
+				tid->next = tidlist;
+				tidlist= tid;
+				pthread_mutex_unlock(&lock2);
 			}
 
 		}
 	}
-	return 0;
+	// Meta Data Print
+	int threadcount  =0;
+	int parent_pid= getpid();
+	printf("Initial PID: %d\n",parent_pid);
+	char message[]  = "TIDS of all spawned threads: \0";
+	while(tidlist){
+		printf("%s, ", tidlist->TID );
+		threadcount++;
+	}
+	printf("%s",message);
+	printf("\nTotal number of threads: %d\n", threadcount);
+
+
+	return tidlist;
 }
+
+
+
+//Where argv is what we're sorting by , file, output directory
+TIDNode * addCSV(addCSVargs* Parameter){
+
+
+
+	addCSVargs* args= (addCSVargs*)param;
+	char *argv = args->sorting_column;
+	char* file_name = args->file_name;
+	char* input_directory = args->input_directory;
+
+	//file + directory
+	char * full_file_path;
+	full_file_path = (char*) malloc(sizeof(char*) * (strlen(input_directory) + strlen(file_name)) );
+
+	//Checking directory status
+	struct stat stt = {0};
+
+	//Appends input_directory to beginning of file_name name if input directory exists
+	if(stat(input_directory, &stt)!= -1){
+		strcpy(full_file_path,input_directory);
+		strcat(full_file_path,file_name);
+	}
+	else{
+		strcpy(full_file_path,file_name);
+	}
+
+	//check if file exists
+    FILE *fp;
+    fp = fopen(full_file_path,"r");
+
+    //fileDoesNotExist
+    if(fp==NULL){
+        fprintf(stderr,"File DNExist\n");
+        return -1;
+    }
+    //check last 4 letters .csv
+    //check if extension is csv file
+    char end[5] = "";
+    int z=0;
+    int h=0;
+    for(z=(int)strlen(file_name)-4;z< (int)strlen(file_name);z++){
+        end[h]=file_name[z];
+        h++;
+    }
+    if(strcmp(end,".csv")!=0){
+        fclose(fp);
+	    return -1;
+    }
+
+    //Therefore we know we are working with csv file which exists
+
+    char * buffer = NULL;
+    size_t len = 0;
+    Node * local = NULL;
+    Node * ptr  = NULL;
+    long llength = 0;
+
+    // make local linked list of movies
+
+    // Reading CSV files
+
+    // read first line (header row)
+    getline(&buffer, &len, fp);
+    char * header = buffer;
+    int column_number = column_finder(header);
+    int key[column_number];
+    int kz = keymaker(header, column_number, key);
+    if ( kz <0){
+        // maybe add which file
+        fprintf(stderr,"%d %s\n",z," :# of bad columns found");
+    	return -1;
+    }
+    // read other rows (movie rows)
+    while((getline(&buffer, &len, fp)!=-1)){
+        char *movie_array[28];
+        // if one movie does not have the correct number of columns, the file is bad and all the movies do not get added to the list
+    	if( column_finder(buffer)!=  column_number){
+            return -1;
+        }
+		int i;
+        // For every column serparate by comma and find column data
+        for(i=0; i<column_number;i++){
+            char* data= column_reader(header,i);
+            movie_array[key[i]]= data;
+            // convert movie array to string
+            int j;
+            char* movie_string = (char*) malloc((strlen(buffer)+column_number+10)*sizeof(char*));
+            for(j=0; j<28;j++){
+                if(j==28){
+                    if( movie_array[i]!= NULL){
+                        strcat(movie_string,movie_array[i]);
+                    }
+                    // might be null terminator
+                    strcat(movie_string,"\n");
+                }
+                if( movie_array[i]!= NULL){
+                    strcat(movie_string,movie_array[i]);
+                }
+                strcat(movie_string,",");
+            }
+            // add to local linked list
+
+            if(local == NULL){
+        		Node * movie = (Node*)malloc(sizeof(Node));
+        		movie->data = movie_string;
+        		movie->next = NULL;
+        		local = movie;
+        		ptr = local;
+
+        	}else{
+                Node * movie = (Node*)malloc(sizeof(Node));
+        		movie->data = movie_string;
+        		ptr->next = movie;
+        		ptr = ptr->next;
+        	}
+
+        }
+    }
+    // add to global linked list
+	pthread_mutex_lock(&lock);
+    Node * temp  = NULL;
+    temp = Global;
+    while(temp){
+        temp= temp->next;
+    }
+    temp = local;
+	pthread_mutex_unlock(&lock);
+
+	// Meta Data Print
+	int threadcount  =0;
+	int parent_pid= getpid();
+	printf("Initial PID: %d\n",parent_pid);
+	char message[]  = "TIDS of all spawned threads: \0";
+	printf("%s",message);
+	printf("\nTotal number of threads: %d\n", 0);
+
+	// tid not nessessary
+	TIDNode * tid = malloc(sizeof(TIDNode));
+	tid->TID = 000000;
+	tid->next = NULL;
+	return tid;
+
+}
+
 
 //argv is what we are sorting by, ddir is output directory
 //Previous ffile and idir are handled outside of method now
@@ -654,132 +857,7 @@ int argchecker( int argc, char *argv[], char* sorting_column, char* sorting_dire
 }
 
 
-//Where argv is what we're sorting by , file, output directory
-int addCSV(addCSVargs* args){
-	char *argv = args->sorting_column;
-	char* file_name = args->file_name;
-	char* input_directory = args->input_directory;
 
-	//file + directory
-	char * full_file_path;
-	full_file_path = (char*) malloc(sizeof(char*) * (strlen(input_directory) + strlen(file_name)) );
-
-	//Checking directory status
-	struct stat stt = {0};
-
-	//Appends input_directory to beginning of file_name name if input directory exists
-	if(stat(input_directory, &stt)!= -1){
-		strcpy(full_file_path,input_directory);
-		strcat(full_file_path,file_name);
-	}
-	else{
-		strcpy(full_file_path,file_name);
-	}
-
-	//check if file exists
-    FILE *fp;
-    fp = fopen(full_file_path,"r");
-
-    //fileDoesNotExist
-    if(fp==NULL){
-        fprintf(stderr,"File DNExist\n");
-        return -1;
-    }
-    //check last 4 letters .csv
-    //check if extension is csv file
-    char end[5] = "";
-    int z=0;
-    int h=0;
-    for(z=(int)strlen(file_name)-4;z< (int)strlen(file_name);z++){
-        end[h]=file_name[z];
-        h++;
-    }
-    if(strcmp(end,".csv")!=0){
-        fclose(fp);
-	    return -1;
-    }
-
-    //Therefore we know we are working with csv file which exists
-
-    char * buffer = NULL;
-    size_t len = 0;
-    Node * local = NULL;
-    Node * ptr  = NULL;
-    long llength = 0;
-
-    // make local linked list of movies
-
-    // Reading CSV files
-
-    // read first line (header row)
-    getline(&buffer, &len, fp);
-    char * header = buffer;
-    int column_number = column_finder(header);
-    int key[column_number];
-    int kz = keymaker(header, column_number, key);
-    if ( kz <0){
-        // maybe add which file
-        fprintf(stderr,"%d %s\n",z," :# of bad columns found");
-    	return -1;
-    }
-    // read other rows (movie rows)
-    while((getline(&buffer, &len, fp)!=-1)){
-        char *movie_array[28];
-        // if one movie does not have the correct number of columns, the file is bad and all the movies do not get added to the list
-    	if( column_finder(buffer)!=  column_number){
-            return -1;
-        }
-		int i;
-        // For every column serparate by comma and find column data
-        for(i=0; i<column_number;i++){
-            char* data= column_reader(header,i);
-            movie_array[key[i]]= data;
-            // convert movie array to string
-            int j;
-            char* movie_string = (char*) malloc((strlen(buffer)+column_number+10)*sizeof(char*));
-            for(j=0; j<28;j++){
-                if(j==28){
-                    if( movie_array[i]!= NULL){
-                        strcat(movie_string,movie_array[i]);
-                    }
-                    // might be null terminator
-                    strcat(movie_string,"\n");
-                }
-                if( movie_array[i]!= NULL){
-                    strcat(movie_string,movie_array[i]);
-                }
-                strcat(movie_string,",");
-            }
-            // add to local linked list
-
-            if(local == NULL){
-        		Node * movie = (Node*)malloc(sizeof(Node));
-        		movie->data = movie_string;
-        		movie->next = NULL;
-        		local = movie;
-        		ptr = local;
-
-        	}else{
-                Node * movie = (Node*)malloc(sizeof(Node));
-        		movie->data = movie_string;
-        		ptr->next = movie;
-        		ptr = ptr->next;
-        	}
-
-        }
-    }
-    // add to global linked list
-	pthread_mutex_lock(&lock);
-    Node * temp  = NULL;
-    temp = Global;
-    while(temp){
-        temp= temp->next;
-    }
-    temp = local;
-	pthread_mutex_unlock(&lock);
-	return 0;
-
-}
 
 
 //Input: header,number of columns in header, key array Output: string in column
