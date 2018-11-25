@@ -108,10 +108,10 @@ int main(int argc, char *argv[]){
 	int * count;
 	count = &i;
 	directory_crawlerargs * original_args = malloc(sizeof(directory_crawlerargs));
-	origninal_args-> sorting_directory = sorting_directory;
-	origninal_args-> sorting_column = sorting_column;
-	origninal_args-> output_directory = output_directory;
-	origninal_args-> count = count;
+	original_args-> sorting_directory = sorting_directory;
+	original_args-> sorting_column = sorting_column;
+	original_args-> output_directory = output_directory;
+	original_args-> count = count;
 	int  x = directory_crawler(original_args);
 	printf("\nTotal number of threads: %d\n", *count);
 	return x;
@@ -157,41 +157,35 @@ int directory_crawler( directory_crawlerargs * args ){
 				if(PRINT==0){
 					printf("New directory: %s\n", new_directory);
 				}
-				pid_t child = fork();
-				fflush(stdout);
-				int pid = getpid();
-				int status = 0;
-				if(child ==0){
-					if( PRINT==1 ||PRINT == 3){
-						printf("%d,",pid);
-					}
-					exit(1);
+
+				directory_crawlerargs * directory_args = malloc(sizeof(directory_crawlerargs));
+				directory_args-> sorting_directory = new_directory;
+				directory_args-> sorting_column = sorting_column;
+				directory_args-> output_directory = output_directory;
+				*count = *count +1 ;
+				directory_args-> count = count;
+				pthread_t cThread;
+				if(pthread_create(&cThread, NULL, directory_crawler, directory_args)){
+    				printf("Pthread creation error");
 				}else{
-					while ((pid = wait(&status)) > 0);
-					if(PRINT == 0)
-					printf("Count is: %d",*count);
-					*count= *count +1;
-					directory_crawler(new_directory,sorting_column,output_directory,count);
+					printf("%d\n", cThread);
 				}
+
+
 
 			}
 
 		}else{
-			pid_t child = fork();
-			fflush(stdout);
-			int pid = getpid();
-			int status = 0;
-			if(child ==0){
-				if( PRINT==1 ||PRINT == 3){
-					printf("%d,",pid);
-				}
-				exit(1);
+			addCSVargs * csv_args = malloc(sizeof(addCSVargs));
+			csv_args-> sorting_column = sorting_column;
+			csv_args-> input_directory = sorting_directory;
+			csv_args-> file_name = (char*) d_name;
+			*count = *count +1;
+			pthread_t cThread;
+			if(pthread_create(&cThread, NULL, addCSV, csv_args)){
+				printf("Pthread creation error");
 			}else{
-				while ((pid = wait(&status)) > 0);
-				if(PRINT ==  0)
-				printf("Count is: %d",*count);
-				*count = *count +1 ;
-				sortCSV(sorting_column,(char*) d_name, output_directory, sorting_directory);
+				printf("%d\n", cThread);
 			}
 
 		}
