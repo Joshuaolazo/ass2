@@ -20,35 +20,7 @@
 #include <pthread.h>
 #include "multiThreadSorter_thread.h"
 
-char* position[28];
-position[0] = "color";
-position[1] = "director_name";
-position[2] = "num_critic_for_reviews";
-position[3] = "duration";
-position[4] = "director_facebook_likes";
-position[5] = "actor_3_facebook_likes";
-position[6] = "actor_2_name";
-position[7] = "actor_1_facebook_likes";
-position[8] = "gross";
-position[9] = "genres";
-position[10] = "actor_1_name";
-position[11] = "movie_title";
-position[12] = "num_voted_users";
-position[13] = "cast_total_facebook_likes";
-position[14] = "actor_3_name";
-position[15] = "facenumber_in_poster";
-position[16] = "plot_keywords";
-position[17] = "movie_imdb_link";
-position[18] = "num_user_for_reviews";
-position[19] = "language";
-position[20] = "country";
-position[21] = "content_rating";
-position[22] = "budget";
-position[23] = "title_year";
-position[24] = "actor_2_facebook_likes";
-position[25] = "imdb_score";
-position[26] = "aspect_ratio";
-position[27] = "movie_facebook_likes";
+char* position[28] = {"color", "director_name""num_critic_for_reviews""duration","director_facebook_likes","actor_3_facebook_likes","actor_2_name","actor_1_facebook_likes","gross","genres","actor_1_name","movie_title","num_voted_users","cast_total_facebook_likes","actor_3_name","facenumber_in_poster","plot_keywords","movie_imdb_link","num_user_for_reviews","language","country","content_rating","budget","title_year","actor_2_facebook_likes","imdb_score","aspect_ratio","movie_facebook_likes"};
 const int numeric[28] = {0,0,1,1,1,1,0,1,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,1,1,1,1,1};
 
 Node* Global;
@@ -835,7 +807,7 @@ int keymaker(char* header,int column_number,int[] key){
         // For every heading, match to find its position in global
         for(j=0;j<27;j++){
             // if match add to key
-            if(strcmp(column,position[i])==0){
+            if(strcmp(column,i])==0){
                 key[i]= j;
                 continue;
             }
