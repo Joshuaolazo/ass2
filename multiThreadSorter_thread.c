@@ -158,8 +158,7 @@ TIDNode * directory_crawler( void * param ){
 				directory_args-> count = count;
 				fflush(stdout);
 				pthread_t cThread;
-				pthread_create(&cThread, NULL, directory_crawler, (void *) directory_args)
-    				fprintf(stderr,"Pthread creation error");
+				pthread_create(&cThread, NULL, directory_crawler, (void *) directory_args);
 
 					pthread_join(cThread, &status);
 
@@ -189,9 +188,7 @@ TIDNode * directory_crawler( void * param ){
 			csv_args-> file_name = (char*) d_name;
 			*count = *count +1;
 			pthread_t cThread;
-			pthread_create(&cThread, NULL, addCSV, (void *) csv_args)
-				printf("Pthread creation error");
-
+			pthread_create(&cThread, NULL, addCSV, (void *) csv_args);
 
 
 				pthread_join(cThread, &status);
