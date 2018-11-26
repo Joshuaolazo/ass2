@@ -31,6 +31,8 @@ pthread_mutex_t lock;
 pthread_mutex_t lock2;
 
 int main(int argc, char *argv[]){
+
+	printf("HELLO WORLD\n");
 	// Make space for Global
 	Global = (Node*) malloc(sizeof(Node));
 	// Check for good arguments example below
