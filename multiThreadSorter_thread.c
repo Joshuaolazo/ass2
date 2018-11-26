@@ -213,7 +213,9 @@ int main(int argc, char *argv[]){
 	// Meta Data Print
 	int threadcount  =0;
 	int parent_pid= getpid();
-	printf("Initial PID: %d\n",parent_pid);
+	printf("main\n");
+	printf("Initial PID: %d\n",parent_pid
+	printf("main\n");
 	char message[]  = "TIDS of all spawned threads: \0";
 	while(tidlist){
 		printf("%s, ", tidlist->TID );
@@ -328,7 +330,9 @@ void * directory_crawler( void * param ){
 	// Meta Data Print
 	int threadcount  =0;
 	int parent_pid= getpid();
+	printf("function\n");
 	printf("Initial PID: %d\n",parent_pid);
+	printf("function\n");
 	char message[]  = "TIDS of all spawned threads: \0";
 	while(tidlist){
 		printf("%s, ", tidlist->TID );
