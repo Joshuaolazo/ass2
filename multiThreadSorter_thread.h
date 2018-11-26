@@ -46,6 +46,5 @@ char* column_reader(char* , int );
 int column_finder(char*);
 int keymaker(char*,int ,int[]);
 void * addCSV( void* param);
-int argchecker( int , char*[], char* , char* ,char*);
 
 #endif /* multiThreadSorter_thread_h */
