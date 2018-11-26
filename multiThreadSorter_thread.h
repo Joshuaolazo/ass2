@@ -44,7 +44,7 @@ int sortCSV(char *, char*);
 int isNumeric(char*);
 char* column_reader(char* , int );
 int column_finder(char*);
-int keymaker(char*,int ,int[]);
+int keymaker(char*,int ,int*);
 void * addCSV( void* param);
 
 #endif /* multiThreadSorter_thread_h */

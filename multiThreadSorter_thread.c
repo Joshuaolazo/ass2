@@ -20,7 +20,7 @@
 #include <pthread.h>
 #include "multiThreadSorter_thread.h"
 
-char* position[28] = {"color", "director_name""num_critic_for_reviews""duration","director_facebook_likes","actor_3_facebook_likes","actor_2_name","actor_1_facebook_likes","gross","genres","actor_1_name","movie_title","num_voted_users","cast_total_facebook_likes","actor_3_name","facenumber_in_poster","plot_keywords","movie_imdb_link","num_user_for_reviews","language","country","content_rating","budget","title_year","actor_2_facebook_likes","imdb_score","aspect_ratio","movie_facebook_likes"};
+
 const int numeric[28] = {0,0,1,1,1,1,0,1,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,1,1,1,1,1};
 
 Node* Global;
@@ -381,6 +381,9 @@ void * addCSV(void* param){
 	printf("%s",message);
 	printf("\nTotal number of threads: %d\n", 0);
 
+    
+    
+    printf("one\n");
 	//file + directory
 	char * full_file_path;
 	full_file_path = (char*) malloc(sizeof(char*) * (strlen(input_directory) + strlen(file_name)) );
@@ -431,18 +434,26 @@ void * addCSV(void* param){
     // make local linked list of movies
 
     // Reading CSV files
-
+    printf("header\n");
     // read first line (header row)
     getline(&buffer, &len, fp);
     char * header = buffer;
     int column_number = column_finder(header);
-    int key[column_number];
+    int* key = (int*) malloc(column_number * sizeof(int));
+    printf("call keymaker\n");
     int kz = keymaker(header, column_number, key);
+    printf("key\n");
+    int shit;
+    
+    for(shit = 0; shit<column_number;shit++){
+        printf("key at i = %d: %d\n",shit, key[shit]);
+    }
     if ( kz <0){
         // maybe add which file
         fprintf(stderr,"%d %s\n",z," :# of bad columns found");
     	return (void*) -1;
     }
+    printf("reader\n");
     // read other rows (movie rows)
     while((getline(&buffer, &len, fp)!=-1)){
         char *movie_array[28];
@@ -489,6 +500,7 @@ void * addCSV(void* param){
 
         }
     }
+    printf("adder\n");
     // add to global linked list
 	pthread_mutex_lock(&lock);
     Node * temp  = NULL;
@@ -502,6 +514,198 @@ void * addCSV(void* param){
 	
 
 	return (void *)0;
+}
+
+
+
+
+//Input: header,number of columns in header, key array Output: string in column
+int keymaker(char* header,int column_number,int* key){
+    char *position[28] = {"color",
+                         "director_name",
+                         "num_critic_for_reviews",
+                         "duration",
+                         "director_facebook_likes",
+                         "actor_3_facebook_likes",
+                         "actor_2_name",
+                         "actor_1_facebook_likes",
+                         "gross",
+                         "genres",
+                         "actor_1_name",
+                         "movie_title",
+                         "num_voted_users",
+                         "cast_total_facebook_likes",
+                         "actor_3_name",
+                         "facenumber_in_poster",
+                         "plot_keywords",
+                         "movie_imdb_link",
+                         "num_user_for_reviews",
+                         "language","country",
+                         "content_rating",
+                         "budget",
+                         "title_year",
+                         "actor_2_facebook_likes",
+                         "imdb_score",
+                         "aspect_ratio",
+                         "movie_facebook_likes"};
+    // Initialize variables
+    int length = strlen(header);
+    int i;
+    /*
+    printf("Entire header row: \n %s", header);
+    printf("length is : %d\n", length);
+    printf("column number: %d\n", column_number);
+    printf("cat\n");
+    printf("before for loop\n");
+    */
+    // For every column, serparate by comma and find heading
+    for(i=1; i<column_number+1;i++){
+        //printf("i is : %d\n", i);
+        char* column= column_reader(header,i);
+        //printf("column is: %s\n", column);
+        int j;
+        int all_correct=0;
+        // For every heading, match to find its position in global
+        for(j=0;j<28;j++){
+            int lcol= strlen(column);
+            int lpos= strlen(position[j]);
+            int diff = strcmp(column,position[j]);
+            printf("column is: %s and position[j] is: %s and j is : %d\n", column,  position[j], j);
+            //printf("strlen col: %d and strlen pos: %d\n\n", lcol, lpos);
+
+            
+            // if match add to key
+            if(diff==0){
+                //printf("column is: %s and position[j] is: %s and j is : %d\n", column,  position[j], j);
+                key[i]= j;
+                
+                break;
+            }
+            else{
+                if(j == 28){
+                    //printf("column is: %s and position[j] is: %s and j is : %d\n", column,  position[j], j);
+                    key[i]= -1;
+					return -1;
+                }
+            }
+        }
+    }
+    return 0;
+
+}
+// finds column number
+// almost the same as column_reader
+// input:row, output: column number
+int column_finder(char* row){
+	// loop setup
+	int commas = 0;
+	int inquotes = 0;
+	int i= 0;
+    int length = strlen(row);
+
+	//counts commas to find column number
+	while(i<length){
+		char c = row[i];
+		// quote check
+		if(c =='"'){
+			if(inquotes ==0)
+					inquotes--;
+			else
+				inquotes++;
+		}
+		// if in quotes do not count commas
+		if(inquotes == 0){
+			if(c == ',')
+				commas++;
+		}
+		i++;
+	}
+	// There are 1 less comma than column number;
+	return commas+1;
+}
+
+
+
+//Input: Column number and row string, Output: string in column
+char* column_reader(char* row, int column){
+    
+	int commas = column; 	// There are 1 less comma than column number
+	int diff=0; 	// Store beginning and end index
+	int end;
+    
+	// If parenthesis for movie title, there is a comma in the title
+	// using int as pseudo boolean. 0 for false 1 for true
+	int inquotes = 0;
+    int quoted=0;
+    int last=0;
+	// Setup for loop
+	int i=0;
+    //printf("commas is : %d\n", commas);
+	while(commas>0){
+
+		if(commas == 1){
+			diff++;
+            if(inquotes!=0){
+                quoted++;
+            }
+		}
+		char c = row[i];
+        //printf("char is %c\n", c);
+        if(c=='\n'){
+            last++;
+            break;
+        }
+
+		// quote check
+		if(c =='"'){
+			if(inquotes ==0){
+				inquotes--;
+			}
+			else{
+				inquotes++;
+			}
+		}
+		// if in quotes do not count commas
+		if(inquotes == 0){
+			if(c == ','){
+				commas--;
+			}
+		}
+		i++;
+	}
+
+    end= i-1;
+
+	// includes the commas so +1 and -1 at the end
+	int start = end-diff+1;
+	diff--;
+    //diff--;
+    if(diff==0){
+        return NULL;
+    }
+    if(last>0){
+        start++;
+        diff--;
+    }
+    if(quoted>0){
+        start++;
+        diff= diff-2;
+    }
+	// for storing the output
+
+    char* column_string = (char*) malloc(diff*2+10*sizeof(char*));
+    int x = 0;
+    while(row[start]==' '){
+        start++;
+    }
+    while (x<diff) {
+        row[start]==' ';
+        column_string[x]=row[start];
+        x++;
+        start++;
+    }
+    //column_string[x+1]='\0';
+    return column_string;
 }
 
 
@@ -869,144 +1073,3 @@ int sortCSV(char *argv, char* ddir){
 	return 0;
 }
 
-
-//Input: header,number of columns in header, key array Output: string in column
-int keymaker(char* header,int column_number,int key[]){
-    // Initialize variables
-    int length = strlen(header);
-    int i;
-
-    // For every column, serparate by comma and find heading
-    for(i=0; i<column_number;i++){
-        char* column= column_reader(header,i);
-        int j;
-        int all_correct=0;
-        // For every heading, match to find its position in global
-        for(j=0;j<27;j++){
-            // if match add to key
-            if(strcmp(column,position[i])==0){
-                key[i]= j;
-                continue;
-            }
-            else{
-                if(j == 27){
-                    all_correct--;
-					return -1;
-                }
-            }
-        }
-    }
-    return 0;
-
-}
-// finds column number
-// almost the same as column_reader
-// input:row, output: column number
-int column_finder(char* row){
-	// loop setup
-	int commas = 0;
-	int inquotes = 0;
-	int i= 0;
-    int length = strlen(row);
-
-	//counts commas to find column number
-	while(i<length){
-		char c = row[i];
-		// quote check
-		if(c =='"'){
-			if(inquotes ==0)
-					inquotes--;
-			else
-				inquotes++;
-		}
-		// if in quotes do not count commas
-		if(inquotes == 0){
-			if(c == ',')
-				commas++;
-		}
-		i++;
-	}
-	// There are 1 less comma than column number;
-	return commas+1;
-}
-
-
-
-//Input: Column number and row string, Output: string in column
-char* column_reader(char* row, int column){
-	int commas = column; 	// There are 1 less comma than column number
-	int diff=0; 	// Store beginning and end index
-	int end;
-
-	// If parenthesis for movie title, there is a comma in the title
-	// using int as pseudo boolean. 0 for false 1 for true
-	int inquotes = 0;
-  int quoted=0;
-  int last=0;
-	// Setup for loop
-	int i=0;
-
-	while(commas>0){
-
-		if(commas == 1){
-			diff++;
-      if(inquotes!=0){
-        quoted++;
-      }
-		}
-		char c = row[i];
-
-    if(c=='\n'){
-      last++;
-      break;
-    }
-
-		// quote check
-		if(c =='"'){
-			if(inquotes ==0){
-				inquotes--;
-			}
-			else{
-				inquotes++;
-			}
-		}
-		// if in quotes do not count commas
-		if(inquotes == 0){
-			if(c == ','){
-				commas--;
-			}
-		}
-		i++;
-	}
-
-  end= i-1;
-
-	// includes the commas so +1 and -1 at the end
-	int start = end-diff+1;
-	diff--;
-  //diff--;
-  if(diff==0){
-    return NULL;
-  }
-  if(last>0){
-    start++;
-    diff--;
-  }
-  if(quoted>0){
-    start++;
-    diff= diff-2;
-  }
-	// for storing the output
-
-
-  char* column_string = (char*) malloc(diff*sizeof(char*));
-  int x = 0;
-  while (x<diff) {
-    column_string[x]=row[start];
-    x++;
-    start++;
-  }
-
-  column_string[diff]='\0';
-  return column_string;
-}
