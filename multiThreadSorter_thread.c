@@ -24,7 +24,7 @@ char* position[28] = {"color", "director_name""num_critic_for_reviews""duration"
 const int numeric[28] = {0,0,1,1,1,1,0,1,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,1,1,1,1,1};
 
 Node* Global;
-const int PRINT = 1;
+const int PRINT = 9;
 
 
 pthread_mutex_t lock;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]){
 	Global = (Node*) malloc(sizeof(Node));
 	// Check for good arguments example below
 	// ./sorter -c movie_title -d thisdir -o thatdir
-	printf("one\n");
+	
 	// More descriptive error messages for bad flags
 	char* sorting_column = NULL;
 	char* sorting_directory = NULL;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[]){
 		fprintf(stderr, "%s\n","Error: Invalid Output Directory.");
 		return(-1);
 	}
-	printf("two\n");
+	
 	// Mutex lock Initial
 	if (pthread_mutex_init(&lock, NULL) != 0){
 		fprintf(stderr,"\n Mutex Initialize failed\n");
@@ -210,20 +210,21 @@ int main(int argc, char *argv[]){
 
 
 
-	// Meta Data Print
+    // Meta Data Print
 	int threadcount  =0;
 	int parent_pid= getpid();
 	printf("main\n");
 	printf("Initial PID: %d\n",parent_pid);
 	printf("main\n");
 	char message[]  = "TIDS of all spawned threads: \0";
-	while(tidlist){
-		printf("%s, ", tidlist->TID );
-		threadcount++;
-	}
 	printf("%s",message);
+    while(tidlist->next != NULL ){
+		printf("%d, ", tidlist->TID );
+        tidlist= tidlist->next;
+		threadcount++;
+	}	
 	printf("\nTotal number of threads: %d\n", threadcount);
-
+    
 	pthread_mutex_destroy(&lock);
 	pthread_mutex_destroy(&lock2);
 
@@ -233,7 +234,8 @@ int main(int argc, char *argv[]){
 
 void * directory_crawler( void * param ){
 	TIDNode * tidlist = (TIDNode*) malloc(sizeof(TIDNode));
-	directory_crawlerargs *  args= (directory_crawlerargs * )param;
+	tidlist = NULL;
+    directory_crawlerargs *  args= (directory_crawlerargs * )param;
 	char * sorting_directory = args->sorting_directory;
 	char * sorting_column = args->sorting_column;
 	char * output_directory= args->output_directory;
@@ -260,8 +262,9 @@ void * directory_crawler( void * param ){
 		if(PRINT==0|| PRINT ==3){
 			printf ("%s\n",  d_name);
 		}
+        //&& strcmp( d_name, ".git")
 		if (dirent->d_type & DT_DIR) {
-			if (strcmp (d_name, "..") != 0 && strcmp (d_name, ".") != 0) {
+			if (strcmp (d_name, "..") != 0 && strcmp (d_name, ".") != 0 && strcmp( d_name, ".git")) {
 				if(PRINT == 3)
 				printf("DIRECTORY\n");
 				int directorylen= (int) strlen(sorting_directory);
@@ -319,26 +322,36 @@ void * directory_crawler( void * param ){
 
 				pthread_mutex_lock(&lock2);
 				TIDNode * tid = malloc(sizeof(TIDNode));
-				tid->TID = cThread;
+                if(PRINT ==0)
+				    printf("Csv thread ID: %d\n", cThread);
+                tid->TID = cThread;
 				tid->next = tidlist;
 				tidlist= tid;
+                if(PRINT ==0)
+                    printf("New csv tid is: %d\n",tidlist->TID);
 				pthread_mutex_unlock(&lock2);
 
 
 		}
 	}
-	// Meta Data Print
+	// Meta Data 
+    fflush(stdout);
 	int threadcount  =0;
 	int parent_pid= getpid();
-	printf("function\n");
+    if(PRINT ==9)
+        printf("\nDirectory is :%s \n", sorting_directory);
 	printf("Initial PID: %d\n",parent_pid);
-	printf("function\n");
-	char message[]  = "TIDS of all spawned threads: \0";
-	while(tidlist){
-		printf("%s, ", tidlist->TID );
-		threadcount++;
-	}
-	printf("%s",message);
+	printf("TIDS of all spawned threads: \0");
+    
+    TIDNode * print = malloc(sizeof(TIDNode));
+    print = tidlist; 
+    if (print != NULL){      
+        while(print!= NULL ){
+		  printf("%d, ", print->TID );
+          print= print->next;
+		  threadcount++;
+	   }
+    }
 	printf("\nTotal number of threads: %d\n", threadcount);
 
 
@@ -350,12 +363,23 @@ void * directory_crawler( void * param ){
 //Where argv is what we're sorting by , file, output directory
 void * addCSV(void* param){
 
-
+   
 
 	addCSVargs* args= (addCSVargs*)param;
 	char *argv = args->sorting_column;
 	char* file_name = args->file_name;
 	char* input_directory = args->input_directory;
+    
+      
+    // Meta Data Print
+	int threadcount  =0;
+	int parent_pid= getpid();
+    if(PRINT ==9)
+        printf("\nFile is :%s \n", file_name);   
+	printf("Initial PID: %d\n",parent_pid);
+	char message[]  = "TIDS of all spawned threads: \0";
+	printf("%s",message);
+	printf("\nTotal number of threads: %d\n", 0);
 
 	//file + directory
 	char * full_file_path;
@@ -475,14 +499,7 @@ void * addCSV(void* param){
     temp = local;
 	pthread_mutex_unlock(&lock);
 
-	// Meta Data Print
-	int threadcount  =0;
-	int parent_pid= getpid();
-	printf("Initial PID: %d\n",parent_pid);
-	char message[]  = "TIDS of all spawned threads: \0";
-	printf("%s",message);
-	printf("\nTotal number of threads: %d\n", 0);
-
+	
 
 	return (void *)0;
 }
