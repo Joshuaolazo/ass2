@@ -165,7 +165,6 @@ int main(int argc, char *argv[]){
 		fprintf(stderr,"%s\n","Too many input arguments");
 		return -1;
 	}
-	printf("%d\n",correct_args);
 	printf("%s\n",sorting_column);
 	printf("%s\n",sorting_directory);
 	printf("%s\n",output_directory);
