@@ -32,17 +32,21 @@ pthread_mutex_t lock2;
 
 int main(int argc, char *argv[]){
 
-	printf("HELLO WORLD\n");
+
 	// Make space for Global
 	Global = (Node*) malloc(sizeof(Node));
 	// Check for good arguments example below
 	// ./sorter -c movie_title -d thisdir -o thatdir
-
+	printf("one\n");
 	// More descriptive error messages for bad flags
 	char* sorting_column = NULL;
 	char* sorting_directory = NULL;
 	char* output_directory = NULL;
 	int correct_args = argchecker(argc, argv, sorting_column, sorting_directory, output_directory);
+	printf("%d",correct_args);
+	printf("%s",sorting_column);
+	printf("%s",sorting_directory);
+	printf("%s",output_directory);
 	if (correct_args<0){
 		return -1;
 	}
@@ -60,7 +64,7 @@ int main(int argc, char *argv[]){
 		fprintf(stderr, "%s\n","Error: Invalid Output Directory.");
 		return(-1);
 	}
-
+	printf("two\n");
 	// Mutex lock Initial
 	if (pthread_mutex_init(&lock, NULL) != 0){
 		fprintf(stderr,"\n Mutex Initialize failed\n");
