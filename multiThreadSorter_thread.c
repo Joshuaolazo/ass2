@@ -214,7 +214,7 @@ int main(int argc, char *argv[]){
 	int threadcount  =0;
 	int parent_pid= getpid();
 	printf("main\n");
-	printf("Initial PID: %d\n",parent_pid
+	printf("Initial PID: %d\n",parent_pid);
 	printf("main\n");
 	char message[]  = "TIDS of all spawned threads: \0";
 	while(tidlist){
