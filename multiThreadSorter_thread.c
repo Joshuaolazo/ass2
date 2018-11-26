@@ -468,7 +468,7 @@ void * addCSV(void* param){
             movie_array[key[i]]= data;
             // convert movie array to string
             int j;
-            char* movie_string = (char*) malloc((strlen(buffer)+column_number+10)*sizeof(char*));
+            char* movie_string = (char*) malloc((strlen(buffer)+column_number+5000)*sizeof(char*));
             for(j=0; j<28;j++){
                 if(j==28){
                     if( movie_array[i]!= NULL){
@@ -559,7 +559,7 @@ int keymaker(char* header,int column_number,int* key){
     printf("before for loop\n");
     */
     // For every column, serparate by comma and find heading
-    for(i=1; i<column_number+1;i++){
+    for(i=0; i<column_number;i++){
         //printf("i is : %d\n", i);
         char* column= column_reader(header,i);
         //printf("column is: %s\n", column);
@@ -570,13 +570,13 @@ int keymaker(char* header,int column_number,int* key){
             int lcol= strlen(column);
             int lpos= strlen(position[j]);
             int diff = strcmp(column,position[j]);
-            printf("column is: %s and position[j] is: %s and j is : %d\n", column,  position[j], j);
+            //printf("column is: %s and position[j] is: %s and j is : %d\n", column,  position[j], j);
             //printf("strlen col: %d and strlen pos: %d\n\n", lcol, lpos);
 
             
             // if match add to key
             if(diff==0){
-                //printf("column is: %s and position[j] is: %s and j is : %d\n", column,  position[j], j);
+                printf("column is: %s and position[j] is: %s and j is : %d\n", column,  position[j], j);
                 key[i]= j;
                 
                 break;
@@ -588,7 +588,9 @@ int keymaker(char* header,int column_number,int* key){
 					return -1;
                 }
             }
+            
         }
+        printf("key at i = %d: %d\n",i, key[i]);
     }
     return 0;
 
@@ -629,7 +631,7 @@ int column_finder(char* row){
 //Input: Column number and row string, Output: string in column
 char* column_reader(char* row, int column){
     
-	int commas = column; 	// There are 1 less comma than column number
+	int commas = column+1; 	// There are 1 less comma than column number
 	int diff=0; 	// Store beginning and end index
 	int end;
     
