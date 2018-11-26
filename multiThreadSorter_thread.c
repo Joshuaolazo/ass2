@@ -44,9 +44,9 @@ int main(int argc, char *argv[]){
 	char* output_directory = NULL;
 	int correct_args = argchecker(argc, argv, sorting_column, sorting_directory, output_directory);
 	printf("%d",correct_args);
-	printf("%s",sorting_column);
-	printf("%s",sorting_directory);
-	printf("%s",output_directory);
+	printf("%s",*sorting_column);
+	printf("%s",*sorting_directory);
+	printf("%s",*output_directory);
 	if (correct_args<0){
 		return -1;
 	}
