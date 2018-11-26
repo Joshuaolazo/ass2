@@ -180,10 +180,6 @@ int main(int argc, char *argv[]){
 		fprintf(stderr, "%s\n","Error: Invalid Output Directory.");
 		return(-1);
 	}
-
-	printf("%s\n",sorting_column);
-	printf("%s\n",sorting_directory);
-	printf("%s\n",output_directory);
 	printf("two\n");
 	// Mutex lock Initial
 	if (pthread_mutex_init(&lock, NULL) != 0){
