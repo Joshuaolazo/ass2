@@ -42,14 +42,133 @@ int main(int argc, char *argv[]){
 	char* sorting_column = NULL;
 	char* sorting_directory = NULL;
 	char* output_directory = NULL;
-	int correct_args = argchecker(argc, argv, sorting_column, sorting_directory, output_directory);
-	printf("%d",correct_args);
-	printf("%s",*sorting_column);
-	printf("%s",*sorting_directory);
-	printf("%s",*output_directory);
-	if (correct_args<0){
+	int x;
+	switch (argc) {
+		// "Bad" Input Args
+		// Returns descriptive error message
+		case 0 :
+		case 1 :
+		fprintf(stderr,"%s\n","Not enough input arguments");
+		return -1;
+		case 2 :
+		case 4 :
+		case 6 :
+		fprintf(stderr,"%s\n","Bad number of input arguments");
+		return -1;
+
+		// "Good" input args
+		// Runs the code below each case
+		// each case below is a subset
+		case 7 :
+		x = 7;
+		if(strcmp(argv[x-2],"-o") == 0){
+			if(output_directory==NULL ){
+				output_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-d") == 0){
+			if(sorting_directory==NULL ){
+				sorting_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-c") == 0){
+			if(sorting_column==NULL ){
+				sorting_column= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else{
+			fprintf(stderr,"%s\n","Invalid Flag");
+			return -1;
+		}
+		case 5:
+		x = 5;
+		if(strcmp(argv[x-2],"-o") == 0){
+			if(output_directory==NULL ){
+				output_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-d") == 0){
+			if(sorting_directory==NULL ){
+				sorting_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-c") == 0){
+			if(sorting_column==NULL ){
+				sorting_column= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else{
+			fprintf(stderr,"%s\n","Invalid Flag");
+			return -1;
+		}
+		case 3 :
+		x = 3;
+		if(strcmp(argv[x-2],"-o") == 0){
+			if(output_directory==NULL ){
+				output_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-d") == 0){
+			if(sorting_directory==NULL ){
+				sorting_directory= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else if(strcmp(argv[x-2],"-c") == 0){
+			if(sorting_column==NULL ){
+				sorting_column= argv[x-1];
+			}
+			else{
+				fprintf(stderr,"%s\n","Double set flag");
+				return -1;
+			}
+		}
+		else{
+			fprintf(stderr,"%s\n","Invalid Flag");
+			return -1;
+		}
+		break;
+
+		// Bad input if over 7 args
+		default:
+		fprintf(stderr,"%s\n","Too many input arguments");
 		return -1;
 	}
+	printf("%d\n",correct_args);
+	printf("%s\n",sorting_column);
+	printf("%s\n",sorting_directory);
+	printf("%s\n",output_directory);
 	// Sorting Column must be defined
 	if(sorting_column==NULL ){
 		fprintf(stderr,"%s\n","-c flag is required");
